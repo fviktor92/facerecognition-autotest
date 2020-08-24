@@ -1,0 +1,7 @@
+# Project exclude paths
+/node_modules/
+*.js
+!plugins/*.js
+/cypress/videos/
+/cypress/screenshots/
+/.idea/*
