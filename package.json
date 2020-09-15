@@ -5,17 +5,20 @@
   "main": "index.js",
   "scripts": {
     "cy:run": "cypress run",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:openLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 cypress open"
   },
   "keywords": [],
   "author": "Farkas Viktor",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^5.0.0"
+    "cross-env": "^7.0.2",
+    "cypress": "^5.2.0",
+    "mocha": "^8.1.1",
+    "mochawesome": "^6.1.1"
   },
   "dependencies": {
-    "@types/node": "^14.6.0",
-    "serialize-javascript": ">=3.1.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.2",
+    "serialize-javascript": ">=3.1.0"
   }
 }

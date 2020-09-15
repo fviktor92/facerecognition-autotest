@@ -1,1 +1,12 @@
-{}
+{
+  "defaultCommandTimeout": 6000,
+  "pageLoadTimeout": 60000,
+  "baseUrl": "http://client:3000",
+  "env": {
+    "dockerClientUrl": "http://client:3000",
+    "dockerApiUrl": "http://api:3001",
+    "localhostClientUrl": "http://localhost:3000",
+    "localhostApiUrl": "http://localhost:3001"
+  },
+  "reporter": "mochawesome"
+}
