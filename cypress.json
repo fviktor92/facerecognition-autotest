@@ -8,5 +8,11 @@
     "localhostClientUrl": "http://localhost:3000",
     "localhostApiUrl": "http://localhost:3001"
   },
+  "fixturesFolder": "test/cypress/fixtures",
+  "integrationFolder": "test/cypress/integration",
+  "pluginsFile": "test/cypress/plugins/index.js",
+  "screenshotsFolder": "test/cypress/screenshots",
+  "videosFolder": "test/cypress/videos",
+  "supportFile": "test/cypress/support/index.ts",
   "reporter": "mochawesome"
 }
