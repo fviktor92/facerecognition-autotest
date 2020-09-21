@@ -8,13 +8,13 @@ describe('Registration Test', function (): void
     beforeEach(function (): void
     {
         cy.visit("/register");
-    })
+    });
 
     it('New user successful registration should redirect to face recognition app', function (): void
     {
         // Mocking a successful registration response
         cy.route2({
-            url: Cypress.env('localhostApiUrl') + '/register',
+            url: '**/register',
             method: 'POST',
         }, (req) =>
         {
@@ -38,7 +38,7 @@ describe('Registration Test', function (): void
     {
         // Mocking a bad request registration response
         cy.route2({
-            url: Cypress.env('localhostApiUrl') + '/register',
+            url: '**/register',
             method: 'POST',
         }, (req) =>
         {

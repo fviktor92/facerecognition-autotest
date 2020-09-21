@@ -14,7 +14,6 @@
   "devDependencies": {
     "cross-env": "^7.0.2",
     "cypress": "^5.2.0",
-    "miragejs": "^0.1.40",
     "mocha": "^8.1.1",
     "mochawesome": "^6.1.1"
   },
