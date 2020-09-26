@@ -2,15 +2,19 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": "./node_modules",
-    "target": "es6",
+    "target": "es5",
     "lib": [
       "es6",
       "dom"
     ],
     "types": [
       "cypress",
+      "pg",
+      "node"
     ],
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*.ts",

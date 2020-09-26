@@ -1,4 +1,5 @@
 import {NavigationBar} from "../../support/selectors/NavigationBar";
+import {ResourceFileReader} from "../../../../src/common/ResourceFileReader";
 
 const NAME_INPUT_SELECTOR: string = '#name';
 const EMAIL_INPUT_SELECTOR: string = '#email-address';
@@ -27,6 +28,7 @@ describe('Registration Test', function (): void
           .get(REGISTER_BTN_SELECTOR).click();
 
         cy.get('#app-panel').should('be.visible');
+        cy.url().then((url: string) => expect(url.endsWith('/app')).to.be.true);
     });
 
     it('Already Existing User Registration Should Remain on Registration Page', function (): void
@@ -46,7 +48,7 @@ describe('Registration Test', function (): void
         cy.get('#register-error-message').should('have.text', 'Unable to register. This e-mail address is already registered!');
     });
 
-    it('Correct elements are displayed', function(): void
+    it('Correct elements are displayed', function (): void
     {
         // Navigation bar elements
         cy.get(NavigationBar.REGISTER_BTN).should('be.visible').should('have.text', 'Register');
@@ -57,5 +59,13 @@ describe('Registration Test', function (): void
         cy.get('#email-label').should('be.visible').should('have.text', 'Email');
         cy.get('#password-label').should('be.visible').should('have.text', 'Password');
         cy.get('#register-register-btn').should('have.value', 'Register');
+    });
+
+    it.only('End to end', function (): void
+    {
+        cy.get(NAME_INPUT_SELECTOR).type('Endto End')
+          .get(EMAIL_INPUT_SELECTOR).type('endtoend@test.com')
+          .get(PASSWORD_INPUT_SELECTOR).type('e2e')
+          .get(REGISTER_BTN_SELECTOR).click();
     });
 });
