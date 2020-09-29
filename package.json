@@ -6,7 +6,7 @@
   "scripts": {
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "cy:openLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 cypress open"
+    "cy:openLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 ENV=local cypress open"
   },
   "keywords": [],
   "author": "Farkas Viktor",

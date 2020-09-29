@@ -2,7 +2,8 @@
 
 /// <reference types="cypress" />
 
-import {ResourceFileReader} from "../../../src/common/ResourceFileReader";
+
+import {EnvironmentManager} from "../../../src/common/EnvironmentManager";
 
 /**
  * @type {Cypress.PluginConfig}
@@ -13,10 +14,10 @@ module.exports = (on: any, config: any) =>
     config.experimentalNetworkStubbing = true;
 
     on('task', {
-        readResourceJsonSync(fileName: string)
+        initEnvironment()
         {
-            let rfr = new ResourceFileReader();
-            return rfr.readResourceJsonSync(fileName);
+            EnvironmentManager.initialize();
+            return null;
         }
     })
 

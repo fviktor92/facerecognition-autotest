@@ -3,13 +3,10 @@ const fs = require('fs');
 
 export class ResourceFileReader
 {
-    readResourceJsonSync(fileName: string): JSON
+    readResourceJsonSync(fileName: string): { [index: string]: any }
     {
         let resourcePath: string = path.join(__dirname, '../../', 'resources', fileName);
-        console.log(resourcePath);
         let data: string = fs.readFileSync(resourcePath, "utf-8");
-        let json: JSON = JSON.parse(data);
-        console.log(json);
-        return json;
+        return JSON.parse(data);
     }
 }
