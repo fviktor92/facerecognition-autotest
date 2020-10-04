@@ -3,7 +3,8 @@
 /// <reference types="cypress" />
 
 
-import {EnvironmentManager} from "../../../src/common/EnvironmentManager";
+import {DatabaseQueries} from "../../../src/common/DatabaseQueries";
+import {QueryResult, QueryResultRow} from "pg";
 
 /**
  * @type {Cypress.PluginConfig}
@@ -14,12 +15,16 @@ module.exports = (on: any, config: any) =>
     config.experimentalNetworkStubbing = true;
 
     on('task', {
-        initEnvironment()
+        queryUserByEmail(email: string): Promise<QueryResultRow>
         {
-            EnvironmentManager.initialize();
-            return null;
-        }
-    })
+            return DatabaseQueries.getUserByEmail(email);
+        },
 
+        queryLoginByEmail(email: string): Promise<QueryResultRow>
+        {
+            return DatabaseQueries.getLoginByEmail(email);
+        }
+
+    });
     return config;
 }

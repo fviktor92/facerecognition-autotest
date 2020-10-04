@@ -1,5 +1,6 @@
 import {NavigationBar} from "../../support/selectors/NavigationBar";
-import {ResourceFileReader} from "../../../../src/common/ResourceFileReader";
+import {AppPage} from "../../support/selectors/AppPage";
+import {compareSync} from "bcrypt-nodejs";
 
 const NAME_INPUT_SELECTOR: string = '#name';
 const EMAIL_INPUT_SELECTOR: string = '#email-address';
@@ -11,6 +12,11 @@ describe('Registration Test', function (): void
     beforeEach(function (): void
     {
         cy.visit('/register');
+    });
+
+    after(function (): void
+    {
+
     });
 
     it('New user successful registration should redirect to face recognition app', function (): void
@@ -27,7 +33,7 @@ describe('Registration Test', function (): void
           .get(PASSWORD_INPUT_SELECTOR).type('mockpw')
           .get(REGISTER_BTN_SELECTOR).click();
 
-        cy.get('#app-panel').should('be.visible');
+        cy.get(AppPage.APP_PANEL).should('be.visible');
         cy.url().then((url: string) => expect(url.endsWith('/app')).to.be.true);
     });
 
@@ -63,9 +69,34 @@ describe('Registration Test', function (): void
 
     it.only('End to end', function (): void
     {
-        cy.get(NAME_INPUT_SELECTOR).type('Endto End')
-          .get(EMAIL_INPUT_SELECTOR).type('endtoend@test.com')
-          .get(PASSWORD_INPUT_SELECTOR).type('e2e')
-          .get(REGISTER_BTN_SELECTOR).click();
+        let expectedName: string = 'Endto End';
+        let expectedEmail: string = 'endtoend@test.com';
+        let expectedPw: string = 'e2e';
+        cy.get(NAME_INPUT_SELECTOR).type(expectedName)
+          .get(EMAIL_INPUT_SELECTOR).type(expectedEmail)
+          .get(PASSWORD_INPUT_SELECTOR).type(expectedPw)
+          .get(REGISTER_BTN_SELECTOR).click()
+          .get(AppPage.APP_PANEL)
+          .then(() =>
+          {
+              cy.task('queryUserByEmail', expectedEmail).then((row: any) =>
+              {
+                  let {id, name, email, entries, joined} = row;
+                  let _joined: string = new Date(joined).toDateString();
+                  let today: string = new Date().toDateString();
+                  expect(id).to.be.a('number', 'id was not a number type');
+                  expect(name).to.be.equal(expectedName, 'name did not match');
+                  expect(email).to.be.equal(expectedEmail, 'email did not match');
+                  expect(entries).to.be.equal('0', 'initial entry number was not 0');
+                  expect(_joined).to.be.equal(today, 'joined date was not today');
+              });
+              cy.task('queryLoginByEmail', expectedEmail).then((row: any) =>
+              {
+                  let {id, hash, email} = row;
+                  expect(id).to.be.a('number', 'id was not a number type');
+                  expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password did not match');
+                  expect(email).to.be.equal(expectedEmail, 'email did not match');
+              })
+          });
     });
 });

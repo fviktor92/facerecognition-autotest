@@ -6,7 +6,8 @@
     "password": "admin"
   },
   "local": {
-    "host": "localhost:5432",
+    "host": "localhost",
+    "port": 5432,
     "database": "smartbrain",
     "user": "postgres",
     "password": "admin"
