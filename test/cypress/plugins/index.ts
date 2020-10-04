@@ -4,7 +4,6 @@
 
 
 import {DatabaseQueries} from "../../../src/common/DatabaseQueries";
-import {QueryResult, QueryResultRow} from "pg";
 
 /**
  * @type {Cypress.PluginConfig}
@@ -15,16 +14,7 @@ module.exports = (on: any, config: any) =>
     config.experimentalNetworkStubbing = true;
 
     on('task', {
-        queryUserByEmail(email: string): Promise<QueryResultRow>
-        {
-            return DatabaseQueries.getUserByEmail(email);
-        },
-
-        queryLoginByEmail(email: string): Promise<QueryResultRow>
-        {
-            return DatabaseQueries.getLoginByEmail(email);
-        }
-
+        ...DatabaseQueries.databaseTasks
     });
     return config;
 }
