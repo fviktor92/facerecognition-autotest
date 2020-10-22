@@ -1,8 +1,9 @@
+const registerPanel: string = '#register-panel';
 export const RegisterPage =
     {
-        NAME_INPUT: '#name',
-        EMAIL_INPUT: '#email-address',
-        PASSWORD_INPUT: '#password',
-        REGISTER_BTN: '#register-register-btn'
+        REGISTER_PANEL: registerPanel,
+        NAME_INPUT: `${registerPanel} #name`,
+        EMAIL_INPUT: `${registerPanel} #email-address`,
+        PASSWORD_INPUT: `${registerPanel} #password`,
+        REGISTER_BTN: `${registerPanel} #register-register-btn`
     };
-
