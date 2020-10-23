@@ -3,6 +3,7 @@ import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
 import {AppPage} from "../../support/selectors/AppPage";
 import {NavigationBar} from "../../support/selectors/NavigationBar";
+import {QueryResult, QueryResultRow} from "pg";
 
 describe('Sign In Test', function (): void
 {
@@ -28,7 +29,7 @@ describe('Sign In Test', function (): void
      * Verifies that:
      * - Application panel is displayed
      * - The URL has changed
-     *  - Data from profile response is displayed
+     * - Data from profile response is displayed
      */
     it('Successful sign in should redirect to face recognition app', function (): void
     {
@@ -44,7 +45,7 @@ describe('Sign In Test', function (): void
                       headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
                       body: this.successfulSignInResponse
                   })
-                  .route2('GET', `**/${ApiPaths.PROFILE_PATH}/${this.successfulProfileResponse.id}`, {
+                  .route2('GET', `**${ApiPaths.PROFILE_PATH}/${this.successfulProfileResponse.id}`, {
                       statusCode: 200,
                       headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
                       body: this.successfulProfileResponse
@@ -109,10 +110,33 @@ describe('Sign In Test', function (): void
               .get('@signInButton').should('have.value', 'Sign in')
               .get('@registerButton').should('have.text', 'Register');
         });
-
     });
 
+    /**
+     * Pre-condition: Given user with 'testmctestify@test.hu' e-mail exists in both 'users' and 'login' table.
+     * Verifies that the user was successfully logged in and the expected user data is returned.
+     */
     it('End to end sign in', function (): void
     {
+        cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInRequest.json`).then((json: object) =>
+        {
+            this.E2E_SIGNIN_REQ = json;
+            let expectedEmail = this.E2E_SIGNIN_REQ.email;
+            let expectedPw = this.E2E_SIGNIN_REQ.password;
+            cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInResponseExpected.json`).then((json: object) =>
+            {
+                this.expectedResponse = json;
+
+                cy.get('@emailInput').type(expectedEmail)
+                  .get('@passwordInput').type(expectedPw)
+                  .get('@signInButton').click();
+
+                cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+                {
+                    cy.get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.expectedResponse.name}, your current entry count is...`)
+                      .get(AppPage.ENTRIES_TXT).should('have.text', `${this.expectedResponse.entries}`);
+                });
+            });
+        });
     });
 })
