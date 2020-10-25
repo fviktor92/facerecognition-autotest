@@ -12,15 +12,16 @@
   "author": "Farkas Viktor",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcrypt-nodejs": "0.0.30",
     "@types/debug": "^4.1.5",
     "@types/node": "^14.11.2",
     "@types/pg": "^7.14.5",
-    "@types/bcrypt-nodejs": "0.0.30",
+    "bcrypt-nodejs": "0.0.3",
     "cross-env": "^7.0.2",
     "cypress": "^5.4.0",
+    "eslint-plugin-cypress": "^2.11.2",
     "mocha": "^8.1.1",
     "mochawesome": "^6.1.1",
-    "bcrypt-nodejs": "0.0.3",
     "pg": "^8.0.3"
   },
   "dependencies": {

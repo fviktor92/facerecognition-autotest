@@ -1,0 +1,16 @@
+{
+    "docker": {
+        "clientHost": "http://client:3000",
+        "apiHost": "http://api:3001",
+        "dbUrl": "jdbc:postgresql://postgres/smartbrain",
+        "dbUser": "postgres",
+        "dbPassword": "admin"
+    },
+    "local": {
+        "clientHost": "http://127.0.0.1:3000",
+        "apiHost": "http://127.0.0.1:3001",
+        "dbUrl": "jdbc:postgresql://localhost:5432/smartbrain",
+        "dbUser": "postgres",
+        "dbPassword": "admin"
+    }
+}

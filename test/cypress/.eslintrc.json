@@ -1,0 +1,14 @@
+{
+  "globals": {
+    "cy": true,
+    "Cypress": true
+  },
+  "plugins": [
+    "cypress"
+  ],
+  "extends": [
+    "plugin:cypress/recommended",
+    "plugin:@cypress/dev/general",
+    "plugin:@cypress/dev/tests"
+  ]
+}

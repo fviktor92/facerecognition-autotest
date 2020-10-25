@@ -3,7 +3,7 @@ import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
 import {AppPage} from "../../support/selectors/AppPage";
 import {NavigationBar} from "../../support/selectors/NavigationBar";
-import {QueryResult, QueryResultRow} from "pg";
+import {clearSessionStorage} from "../../support/appactions/AuthActions";
 
 describe('Sign In Test', function (): void
 {
@@ -11,10 +11,7 @@ describe('Sign In Test', function (): void
 
     beforeEach(function (): void
     {
-        cy.window().then((win) =>
-        {
-            win.sessionStorage.clear();
-        });
+        clearSessionStorage();
         cy.visit(PagePaths.SIGNIN_PAGE);
         cy.get(Pages.SIGN_IN_PANEL).as('signInPanel').within(() =>
         {

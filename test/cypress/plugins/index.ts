@@ -4,6 +4,7 @@
 
 
 import {DatabaseQueries} from "../../../src/common/DatabaseQueries";
+import {EnvironmentManager} from "../../../src/common/EnvironmentManager";
 
 /**
  * @type {Cypress.PluginConfig}
@@ -14,7 +15,8 @@ module.exports = (on: any, config: any) =>
     config.experimentalNetworkStubbing = true;
 
     on('task', {
-        ...DatabaseQueries.databaseTasks
+        ...DatabaseQueries.databaseTasks,
+        ...EnvironmentManager.environmentTasks
     });
     return config;
 }
