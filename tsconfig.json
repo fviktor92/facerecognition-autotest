@@ -12,6 +12,7 @@
   ],
   "types": [
     "cypress",
+    "cypress-image-snapshot",
     "pg",
     "node"
   ],

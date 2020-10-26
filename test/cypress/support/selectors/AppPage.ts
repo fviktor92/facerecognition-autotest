@@ -6,6 +6,7 @@ export const AppPage =
         DESCRIPTION_TXT: '#description-txt',
         URL_INPUT: '#url-input',
         DETECT_BTN: '#detect-btn',
-        INPUT_IMG: '#inputimage'
+        INPUT_IMG: '#inputimage',
+        BOUNDING_BOX_DIVS: '.bounding-box'
     };
 

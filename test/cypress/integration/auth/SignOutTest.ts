@@ -6,11 +6,9 @@ import {Pages} from "../../support/selectors/Pages";
 
 describe('Sign Out Test', function (): void
 {
-    const FIXTURES_AUTH_PATH: string = '/auth/';
-
     it('Sign out should redirect to sign in page', function ()
     {
-        cy.fixture(`${FIXTURES_AUTH_PATH}user_default.json`).then((userJson: object) =>
+        cy.fixture('user_default.json').then((userJson: object) =>
         {
             let defaultUser: User = Object.assign(User.prototype, userJson);
             authenticateUser(defaultUser);

@@ -1,0 +1,110 @@
+{
+  "status": {
+    "code": 10000,
+    "description": "Ok",
+    "req_id": "890eeb14492349599ff88f997bf9be98"
+  },
+  "outputs": [
+    {
+      "id": "82a781da139449318787a2e1fcdf1d86",
+      "status": {
+        "code": 10000,
+        "description": "Ok"
+      },
+      "created_at": "2020-10-26T09:33:17.618787900Z",
+      "model": {
+        "id": "a403429f2ddf4b49b307e318f00e528b",
+        "name": "face",
+        "created_at": "2016-10-25T19:30:38.541073Z",
+        "app_id": "main",
+        "output_info": {
+          "output_config": {
+            "concepts_mutually_exclusive": false,
+            "closed_environment": false,
+            "max_concepts": 0,
+            "min_value": 0
+          },
+          "message": "Show output_info with: GET /models/{model_id}/output_info",
+          "type": "detect-concept",
+          "type_ext": "detect-concept"
+        },
+        "model_version": {
+          "id": "34ce21a40cc24b6b96ffee54aabff139",
+          "created_at": "2019-01-17T19:45:49.087547Z",
+          "status": {
+            "code": 21100,
+            "description": "Model is trained and ready"
+          }
+        },
+        "display_name": "Face Detection",
+        "input_info": {},
+        "train_info": {},
+        "model_type_id": "visual-detector"
+      },
+      "input": {
+        "id": "61ce788f73794d1685ff2764dc69c43d",
+        "data": {
+          "image": {
+            "url": "https://clarifai.com/cms-assets/20180320225539/general-008.jpg"
+          }
+        }
+      },
+      "data": {}
+    }
+  ],
+  "rawData": {
+    "status": {
+      "code": 10000,
+      "description": "Ok",
+      "req_id": "890eeb14492349599ff88f997bf9be98"
+    },
+    "outputs": [
+      {
+        "id": "82a781da139449318787a2e1fcdf1d86",
+        "status": {
+          "code": 10000,
+          "description": "Ok"
+        },
+        "created_at": "2020-10-26T09:33:17.618787900Z",
+        "model": {
+          "id": "a403429f2ddf4b49b307e318f00e528b",
+          "name": "face",
+          "created_at": "2016-10-25T19:30:38.541073Z",
+          "app_id": "main",
+          "output_info": {
+            "output_config": {
+              "concepts_mutually_exclusive": false,
+              "closed_environment": false,
+              "max_concepts": 0,
+              "min_value": 0
+            },
+            "message": "Show output_info with: GET /models/{model_id}/output_info",
+            "type": "detect-concept",
+            "type_ext": "detect-concept"
+          },
+          "model_version": {
+            "id": "34ce21a40cc24b6b96ffee54aabff139",
+            "created_at": "2019-01-17T19:45:49.087547Z",
+            "status": {
+              "code": 21100,
+              "description": "Model is trained and ready"
+            }
+          },
+          "display_name": "Face Detection",
+          "input_info": {},
+          "train_info": {},
+          "model_type_id": "visual-detector"
+        },
+        "input": {
+          "id": "61ce788f73794d1685ff2764dc69c43d",
+          "data": {
+            "image": {
+              "url": "https://clarifai.com/cms-assets/20180320225539/general-008.jpg"
+            }
+          }
+        },
+        "data": {}
+      }
+    ]
+  }
+}

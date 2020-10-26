@@ -15,7 +15,6 @@ export const authenticateUser = (user: User): void =>
 {
     getJWT(user).then((result: any) =>
     {
-        console.log(result)
         useAuthToken(result);
         cy.reload();
     });
@@ -35,7 +34,7 @@ export const getSessionStorage = (): Cypress.Chainable<Storage> =>
     });
 };
 
-const useAuthToken = (authToken: string): void =>
+export const useAuthToken = (authToken: string): void =>
 {
     getSessionStorage().then(sessionStorage => sessionStorage.setItem(TOKEN_ATTRIBUTE, authToken));
 };
