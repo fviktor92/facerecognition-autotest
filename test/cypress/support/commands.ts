@@ -24,5 +24,18 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 import {addMatchImageSnapshotCommand} from 'cypress-image-snapshot/command';
+import {RouteMatcher} from "cypress/types/net-stubbing";
 
 addMatchImageSnapshotCommand();
+
+/**
+ * Custom 'route2' command that contains the Access-Control-Allow headers.
+ */
+Cypress.Commands.add('route2AccessControl', (httpMethod: any, urlMatcher: string, statusCode: number, body: string | object): Cypress.Chainable<null> =>
+{
+    return cy.route2(httpMethod, urlMatcher, {
+        statusCode: statusCode,
+        headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
+        body: body
+    });
+});

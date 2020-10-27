@@ -31,40 +31,32 @@ describe('Sign In Test', function (): void
     it('Successful sign in should redirect to face recognition app', function (): void
     {
         // Mocking a successful sign in and profile response
-        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_signInResponse_200.json`).then((signInJson: object) =>
-        {
-            this.successfulSignInResponse = signInJson;
-            cy.fixture(`${FIXTURES_AUTH_PATH}mocked_profileResponse_200.json`).then((profileJson: object) =>
-            {
-                this.successfulProfileResponse = profileJson;
-                cy.route2('POST', `**${ApiPaths.SIGNIN_PATH}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: this.successfulSignInResponse
-                  })
-                  .route2('GET', `**${ApiPaths.PROFILE_PATH}/${this.successfulProfileResponse.id}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: this.successfulProfileResponse
-                  });
-
-                cy.get('@emailInput').type('mockuser@mock.hu')
-                  .get('@passwordInput').type('mockpw')
-                  .get('@signInButton').click();
-
-                cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_signInResponse_200.json`).as('successfulSignInResponse')
+          .then(() =>
+          {
+              cy.fixture(`${FIXTURES_AUTH_PATH}mocked_profileResponse_200.json`).as('successfulProfileResponse')
+                .then(() =>
                 {
-                    cy.get(AppPage.LOGO_IMG).should('be.visible')
-                      .get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.successfulProfileResponse.name}, your current entry count is...`)
-                      .get(AppPage.ENTRIES_TXT).should('have.text', `${this.successfulProfileResponse.entries}`)
-                      .get(AppPage.DESCRIPTION_TXT).should('have.text', 'This Magic Brain will detect faces in your pictures. Give it a try!')
-                      .get(AppPage.URL_INPUT).should('have.attr', 'placeholder', 'Enter picture URL')
-                      .get(AppPage.DETECT_BTN).should('have.text', 'Detect').should('be.enabled');
-                });
-                cy.get(NavigationBar.SIGN_OUT_BTN).should('have.text', 'Sign out');
-                cy.url().then((url: string) => expect(Cypress.config().baseUrl + PagePaths.APP_PAGE).to.be.equal(url, 'url matches'));
-            })
-        });
+                    cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 200, this.successfulSignInResponse);
+                    cy.route2AccessControl('GET', `**${ApiPaths.PROFILE_PATH}/${this.successfulProfileResponse.id}`, 200, this.successfulProfileResponse);
+
+                    cy.get('@emailInput').type('mockuser@mock.hu')
+                      .get('@passwordInput').type('mockpw')
+                      .get('@signInButton').click();
+
+                    cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+                    {
+                        cy.get(AppPage.LOGO_IMG).should('be.visible')
+                          .get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.successfulProfileResponse.name}, your current entry count is...`)
+                          .get(AppPage.ENTRIES_TXT).should('have.text', `${this.successfulProfileResponse.entries}`)
+                          .get(AppPage.DESCRIPTION_TXT).should('have.text', 'This Magic Brain will detect faces in your pictures. Give it a try!')
+                          .get(AppPage.URL_INPUT).should('have.attr', 'placeholder', 'Enter picture URL')
+                          .get(AppPage.DETECT_BTN).should('have.text', 'Detect').should('be.enabled');
+                    });
+                    cy.get(NavigationBar.SIGN_OUT_BTN).should('have.text', 'Sign out');
+                    cy.url().then((url: string) => expect(Cypress.config().baseUrl + PagePaths.APP_PAGE).to.be.equal(url, 'url matches'));
+                })
+          });
     });
 
     /**
@@ -73,21 +65,17 @@ describe('Sign In Test', function (): void
     it('Not existing user sign in should remain on sign in page', function (): void
     {
         // Mocking a bad request sign in response
-        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_signInResponse_400.json`).then((json: object) =>
-        {
-            this.invalidSignInResponse = json;
-            cy.route2('POST', `**${ApiPaths.SIGNIN_PATH}`, {
-                statusCode: 400,
-                headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                body: this.invalidSignInResponse
-            });
+        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_signInResponse_400.json`).as('invalidSignInResponse')
+          .then(() =>
+          {
+              cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 400, this.invalidSignInresponse);
 
-            cy.get('@emailInput').type('not@exists.hu')
-              .get('@passwordInput').type('notauser')
-              .get('@signInButton').click();
+              cy.get('@emailInput').type('not@exists.hu')
+                .get('@passwordInput').type('notauser')
+                .get('@signInButton').click();
 
-            cy.get('#signin-error-message').should('have.text', this.invalidSignInResponse.errorMessage);
-        });
+              cy.get('#signin-error-message').should('have.text', this.invalidSignInResponse.errorMessage);
+          });
     });
 
     /**
@@ -115,25 +103,24 @@ describe('Sign In Test', function (): void
      */
     it('End to end sign in', function (): void
     {
-        cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInRequest.json`).then((json: object) =>
-        {
-            this.E2E_SIGNIN_REQ = json;
-            let expectedEmail = this.E2E_SIGNIN_REQ.email;
-            let expectedPw = this.E2E_SIGNIN_REQ.password;
-            cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInResponseExpected.json`).then((json: object) =>
-            {
-                this.expectedResponse = json;
-
-                cy.get('@emailInput').type(expectedEmail)
-                  .get('@passwordInput').type(expectedPw)
-                  .get('@signInButton').click();
-
-                cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+        cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInRequest.json`).as('E2E_SIGNIN_REQ')
+          .then(() =>
+          {
+              let expectedEmail = this.E2E_SIGNIN_REQ.email;
+              let expectedPw = this.E2E_SIGNIN_REQ.password;
+              cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInResponseExpected.json`).as('expectedResponse')
+                .then(() =>
                 {
-                    cy.get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.expectedResponse.name}, your current entry count is...`)
-                      .get(AppPage.ENTRIES_TXT).should('have.text', `${this.expectedResponse.entries}`);
+                    cy.get('@emailInput').type(expectedEmail)
+                      .get('@passwordInput').type(expectedPw)
+                      .get('@signInButton').click();
+
+                    cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+                    {
+                        cy.get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.expectedResponse.name}, your current entry count is...`)
+                          .get(AppPage.ENTRIES_TXT).should('have.text', `${this.expectedResponse.entries}`);
+                    });
                 });
-            });
-        });
+          });
     });
 })

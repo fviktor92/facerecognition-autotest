@@ -1,12 +1,16 @@
 import {Pool, QueryResultRow} from 'pg';
 import {EnvironmentManager} from "./EnvironmentManager";
 
+/**
+ * Provides access to the current environment's database.
+ */
 export class DatabaseQueries
 {
     private static pool: Pool = new Pool(EnvironmentManager.getDatabaseConfig());
 
     // For Cypress
     static databaseTasks = {
+
         queryUserByEmail(email: string): Promise<QueryResultRow>
         {
             return DatabaseQueries.getUserByEmail(email);
@@ -23,6 +27,11 @@ export class DatabaseQueries
         }
     };
 
+    /**
+     * Executes a select query with the given email in the 'users' table.
+     * @param {string} email The expected email of the user.
+     * @returns {Promise<QueryResultRow>}
+     */
     private static async getUserByEmail(email: string): Promise<QueryResultRow>
     {
         return this.pool.query('SELECT * FROM public.users WHERE email=$1;', [email])
@@ -30,6 +39,11 @@ export class DatabaseQueries
                    .catch(err => console.log(err));
     }
 
+    /**
+     * Executes a select query with the given email in the 'login' table.
+     * @param {string} email The expected email of the user.
+     * @returns {Promise<QueryResultRow>}
+     */
     private static async getLoginByEmail(email: string): Promise<QueryResultRow>
     {
         return this.pool.query('SELECT * FROM public.login WHERE email=$1;', [email])
@@ -37,6 +51,11 @@ export class DatabaseQueries
                    .catch(err => console.log(err));
     };
 
+    /**
+     * Executed a delete query with the given email in the 'users' and 'login' table.
+     * @param {string} email The expected email of the user.
+     * @returns {Promise<Number>}
+     */
     private static async deleteUserByEmail(email: string): Promise<Number>
     {
         let affectedRows: number = 0;

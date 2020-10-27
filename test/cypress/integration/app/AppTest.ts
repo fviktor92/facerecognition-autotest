@@ -1,5 +1,6 @@
+/// <reference path="../../support/index.d.ts" />
+
 import {authenticateUser, useAuthToken} from "../../support/appactions/AuthActions";
-import {User} from "../../../../src/objects/User";
 import {PagePaths} from "../../support/paths/PagePaths";
 import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
@@ -21,7 +22,7 @@ describe('App Test', function (): void
      */
     it('App page should have correct elements displayed', function (): void
     {
-        registerAuthenticationResponses(this);
+        stubAuthenticationResponses(this);
 
         cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
         {
@@ -42,27 +43,20 @@ describe('App Test', function (): void
      */
     it('Face recognition should not display boxes', function (): void
     {
-        registerAuthenticationResponses(this);
+        stubAuthenticationResponses(this);
 
         cy.route2('GET', '**/retriever.jpg', {
-              fixture: `${FIXTURES_APP_PATH}retriever.jpg`,
-              headers: {
-                  'content-type': 'image/jpg'
-              }
-          })
-          .route2('POST', `**${ApiPaths.IMAGEURL_PATH}`, {
-              statusCode: 200,
-              headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-              fixture: `${FIXTURES_APP_PATH}mocked_imageurlResponse_noFaces_200.json`
-          }).as('imageurlResponse')
-          .route2('PUT', `**${ApiPaths.IMAGE_PATH}`, {
-              statusCode: 200,
-              headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-              fixture: `${FIXTURES_APP_PATH}mocked_imageResponse_200.json`
-          });
+            fixture: `${FIXTURES_APP_PATH}retriever.jpg`,
+            headers: {
+                'content-type': 'image/jpg'
+            }
+        });
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_noFaces_200.json`)
+          .then(json => cy.route2AccessControl('POST', `**${ApiPaths.IMAGEURL_PATH}`, 200, json).as('imageurlResponse'));
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageResponse_200.json`)
+          .then(json => cy.route2AccessControl('PUT', `**${ApiPaths.IMAGE_PATH}`, 200, json));
 
-        cy.get(AppPage.URL_INPUT).type(`${Cypress.config().baseUrl}/retriever.jpg`)
-          .get(AppPage.DETECT_BTN).click();
+        typeImageUrlAndDetect(`${Cypress.config().baseUrl}/retriever.jpg`);
 
         cy.wait('@imageurlResponse');
         cy.get(AppPage.INPUT_IMG).matchImageSnapshot('noFaces');
@@ -70,23 +64,15 @@ describe('App Test', function (): void
 
     /**
      * Verifies that an error message is displayed instead of an image when the API return error.
+     * Test is retried once, because there's an issue with previous tests image snapshot comparison.
      */
     it('Error message should be displayed', {retries: 1}, function (): void
     {
-        registerAuthenticationResponses(this);
+        stubAuthenticationResponses(this);
 
-        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_errorMessage_400.json`).as('errorMessageResponse').then(json =>
-        {
-            this.errorMessageResponse = json;
-            cy.route2('POST', `**${ApiPaths.IMAGEURL_PATH}`, {
-                statusCode: 400,
-                headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                body: json
-            });
-        });
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_errorMessage_400.json`).as('errorMessageResponse').then(json => cy.route2AccessControl('POST', `**${ApiPaths.IMAGEURL_PATH}`, 400, json));
 
-        cy.get(AppPage.URL_INPUT).type('https://fakepage.com/invalidimg.jpg')
-          .get(AppPage.DETECT_BTN).click();
+        typeImageUrlAndDetect('https://fakepage.com/invalidimg.jpg');
 
         cy.get(Pages.APP_PANEL).within(() =>
         {
@@ -96,53 +82,55 @@ describe('App Test', function (): void
     });
 
     /**
+     * Verifies that a new image can be face recognized when there is an image already submitted.
+     */
+    it('New image input url should replace existing image', function (): void
+    {
+
+    });
+
+    /**
      * Verifies that when a picture of an URL is submitted:
      * - Entry count is incremented
      * - Visually verifies that the image is displayed and 2 boundary face boxes are displayed.
      */
     it('End to end', {retries: 1}, function (): void
     {
-        cy.fixture('user_default.json').then((userJson: object) =>
-        {
-            let defaultUser: User = Object.assign(User.prototype, userJson);
-            authenticateUser(defaultUser);
-        });
+        cy.fixture('user_default.json').then(authenticateUser);
 
         cy.get(AppPage.ENTRIES_TXT).then(($div) =>
         {
             const beforeEntries: number = parseInt($div.text());
-            cy.get(AppPage.URL_INPUT).type('https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg')
-              .get(AppPage.DETECT_BTN).click();
+            typeImageUrlAndDetect('https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg');
             cy.get(AppPage.ENTRIES_TXT).should('have.text', beforeEntries + 1);
         })
 
-        cy.get(AppPage.BOUNDING_BOX_DIVS, {timeout: 20000})
-          .get(AppPage.INPUT_IMG).matchImageSnapshot('e2e_multipleFaces');
-    })
+        cy.get(AppPage.BOUNDING_BOX_DIVS, {timeout: 20000});
+        cy.get(AppPage.INPUT_IMG).should('not.have.css', 'height', '0px'); // Wait for the image to be actually displayed to take the snapshot
+        cy.get(AppPage.INPUT_IMG).matchImageSnapshot('e2e_multipleFaces');
+    });
 
-    const registerAuthenticationResponses = (testContext: Context) =>
+    const typeImageUrlAndDetect = (url: string) =>
+    {
+        cy.get(AppPage.URL_INPUT).type(url)
+          .get(AppPage.DETECT_BTN).click();
+    };
+
+    const stubAuthenticationResponses = (testContext: Context) =>
     {
         // Mocking a successful sign in and profile response
         cy.fixture(`${FIXTURES_APP_PATH}mocked_signInResponse_200.json`).then((signInJson) =>
         {
             testContext.successfulSignInResponse = signInJson;
+            cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 200, signInJson);
             cy.fixture(`${FIXTURES_APP_PATH}mocked_profileResponse_200.json`).then((profileJson) =>
             {
                 testContext.successfulProfileResponse = profileJson;
-                cy.route2('POST', `**${ApiPaths.SIGNIN_PATH}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: signInJson
-                  })
-                  .route2('GET', `**${ApiPaths.PROFILE_PATH}/${profileJson.id}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: profileJson
-                  });
+                cy.route2AccessControl('GET', `**${ApiPaths.PROFILE_PATH}/${profileJson.id}`, 200, profileJson);
                 useAuthToken(signInJson.token);
                 cy.reload();
             });
         });
-    }
+    };
 });
 

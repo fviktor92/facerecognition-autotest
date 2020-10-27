@@ -31,32 +31,28 @@ describe('Registration Test', function (): void
     it('New user successful registration should redirect to face recognition app', function (): void
     {
         // Mocking a successful registration response
-        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_registrationResponse_200.json`).then((json: object) =>
-        {
-            this.successfulRegistrationResponse = json;
-            cy.route2('POST', `**${ApiPaths.REGISTER_PATH}`, {
-                statusCode: 200,
-                headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                body: this.successfulRegistrationResponse
-            });
+        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_registrationResponse_200.json`).as('successfulRegistrationResponse')
+          .then((json: object) =>
+          {
+              cy.route2AccessControl('POST', `**${ApiPaths.REGISTER_PATH}`, 200, json)
 
-            cy.get('@nameInput').type(this.successfulRegistrationResponse.name)
-              .get('@emailInput').type(this.successfulRegistrationResponse.email)
-              .get('@passwordInput').type('mockpw')
-              .get('@registerButton').click();
+              cy.get('@nameInput').type(this.successfulRegistrationResponse.name)
+                .get('@emailInput').type(this.successfulRegistrationResponse.email)
+                .get('@passwordInput').type('mockpw')
+                .get('@registerButton').click();
 
-            cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
-            {
-                cy.get(AppPage.LOGO_IMG).should('be.visible')
-                  .get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.successfulRegistrationResponse.name}, your current entry count is...`)
-                  .get(AppPage.ENTRIES_TXT).should('have.text', `${this.successfulRegistrationResponse.entries}`)
-                  .get(AppPage.DESCRIPTION_TXT).should('have.text', 'This Magic Brain will detect faces in your pictures. Give it a try!')
-                  .get(AppPage.URL_INPUT).should('have.attr', 'placeholder', 'Enter picture URL')
-                  .get(AppPage.DETECT_BTN).should('have.text', 'Detect').should('be.enabled');
-            });
-            cy.get(NavigationBar.SIGN_OUT_BTN).should('be.visible').should('have.text', 'Sign out');
-            cy.url().then((url: string) => expect(Cypress.config().baseUrl + PagePaths.APP_PAGE).to.be.equal(url, 'url matches'));
-        });
+              cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+              {
+                  cy.get(AppPage.LOGO_IMG).should('be.visible')
+                    .get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.successfulRegistrationResponse.name}, your current entry count is...`)
+                    .get(AppPage.ENTRIES_TXT).should('have.text', `${this.successfulRegistrationResponse.entries}`)
+                    .get(AppPage.DESCRIPTION_TXT).should('have.text', 'This Magic Brain will detect faces in your pictures. Give it a try!')
+                    .get(AppPage.URL_INPUT).should('have.attr', 'placeholder', 'Enter picture URL')
+                    .get(AppPage.DETECT_BTN).should('have.text', 'Detect').should('be.enabled');
+              });
+              cy.get(NavigationBar.SIGN_OUT_BTN).should('be.visible').should('have.text', 'Sign out');
+              cy.url().then((url: string) => expect(Cypress.config().baseUrl + PagePaths.APP_PAGE).to.be.equal(url, 'url matches'));
+          });
     });
 
     /**
@@ -65,22 +61,18 @@ describe('Registration Test', function (): void
     it('Already Existing User Registration Should Remain on Registration Page', function (): void
     {
         // Mocking a bad request registration response
-        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_registrationResponse_400.json`).then((json: object) =>
-        {
-            this.invalidRegistrationResponse = json;
-            cy.route2('POST', `**${ApiPaths.REGISTER_PATH}`, {
-                statusCode: 400,
-                headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                body: this.invalidRegistrationResponse
-            });
+        cy.fixture(`${FIXTURES_AUTH_PATH}mocked_registrationResponse_400.json`).as('invalidRegistrationResponse')
+          .then((json: object) =>
+          {
+              cy.route2AccessControl('POST', `**${ApiPaths.REGISTER_PATH}`, 200, json)
 
-            cy.get('@nameInput').type('Already User')
-              .get('@emailInput').type('already@exists.me')
-              .get('@passwordInput').type('alreadypw')
-              .get('@registerButton').click();
+              cy.get('@nameInput').type('Already User')
+                .get('@emailInput').type('already@exists.me')
+                .get('@passwordInput').type('alreadypw')
+                .get('@registerButton').click();
 
-            cy.get('#register-error-message').should('have.text', this.invalidRegistrationResponse.errorMessage);
-        });
+              cy.get('#register-error-message').should('have.text', this.invalidRegistrationResponse.errorMessage);
+          });
     });
 
     /**
@@ -111,41 +103,41 @@ describe('Registration Test', function (): void
      */
     it('End to end registration', function (): void
     {
-        cy.fixture(`${FIXTURES_AUTH_PATH}e2e_registrationRequest.json`).then((json: object) =>
-        {
-            this.E2E_REG_REQUEST = json;
-            let expectedName: string = this.E2E_REG_REQUEST.name;
-            let expectedEmail: string = this.E2E_REG_REQUEST.email;
-            let expectedPw: string = this.E2E_REG_REQUEST.password;
-            cy.task('deleteUserByEmail', expectedEmail).then(() =>
-            {
-                cy.get('@nameInput').type(expectedName)
-                  .get('@emailInput').type(expectedEmail)
-                  .get('@passwordInput').type(expectedPw)
-                  .get('@registerButton').click()
-                  .get(Pages.APP_PANEL)
-                  .then(() =>
-                  {
-                      cy.task('queryUserByEmail', this.E2E_REG_REQUEST.email).then((row: any) =>
-                      {
-                          let {id, name, email, entries, joined} = row;
-                          let _joined: string = new Date(joined).toDateString();
-                          let today: string = new Date().toDateString();
-                          expect(id).to.be.a('number', 'id is number type');
-                          expect(name).to.be.equal(expectedName, 'name matches');
-                          expect(email).to.be.equal(expectedEmail, 'email matches');
-                          expect(entries).to.be.equal('0', 'initial entry number is 0');
-                          expect(_joined).to.be.equal(today, 'joined date is today');
-                      });
-                      cy.task('queryLoginByEmail', expectedEmail).then((row: any) =>
-                      {
-                          let {id, hash, email} = row;
-                          expect(id).to.be.a('number', 'id is number type');
-                          expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password matches');
-                          expect(email).to.be.equal(expectedEmail, 'email matches');
-                      })
-                  });
-            });
-        });
+        cy.fixture(`${FIXTURES_AUTH_PATH}e2e_registrationRequest.json`).as('E2E_REG_REQUEST')
+          .then(() =>
+          {
+              let expectedName: string = this.E2E_REG_REQUEST.name;
+              let expectedEmail: string = this.E2E_REG_REQUEST.email;
+              let expectedPw: string = this.E2E_REG_REQUEST.password;
+              cy.task('deleteUserByEmail', expectedEmail).then(() =>
+              {
+                  cy.get('@nameInput').type(expectedName)
+                    .get('@emailInput').type(expectedEmail)
+                    .get('@passwordInput').type(expectedPw)
+                    .get('@registerButton').click()
+                    .get(Pages.APP_PANEL)
+                    .then(() =>
+                    {
+                        cy.task('queryUserByEmail', this.E2E_REG_REQUEST.email).then((row: any) =>
+                        {
+                            let {id, name, email, entries, joined} = row;
+                            let _joined: string = new Date(joined).toDateString();
+                            let today: string = new Date().toDateString();
+                            expect(id).to.be.a('number', 'id is number type');
+                            expect(name).to.be.equal(expectedName, 'name matches');
+                            expect(email).to.be.equal(expectedEmail, 'email matches');
+                            expect(entries).to.be.equal('0', 'initial entry number is 0');
+                            expect(_joined).to.be.equal(today, 'joined date is today');
+                        });
+                        cy.task('queryLoginByEmail', expectedEmail).then((row: any) =>
+                        {
+                            let {id, hash, email} = row;
+                            expect(id).to.be.a('number', 'id is number type');
+                            expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password matches');
+                            expect(email).to.be.equal(expectedEmail, 'email matches');
+                        })
+                    });
+              });
+          });
     });
 });
