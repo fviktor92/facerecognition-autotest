@@ -14,7 +14,10 @@
     "cy:runLocalHeadlessChrome": "npm run cy:runLocal --browser chrome --headless",
     "cy:runDockerHeadlessChrome": "npm run cy:runDocker --browser chrome --headless",
     "cy:recordLocalHeadlessChrome": "npm run cy:runLocalHeadlessChrome --record --key da76d19b-fb31-4f8b-8b0f-a201a713df45",
-    "cy:recordLocalHeadedChrome": "npm run cy:runLocalHeadedChrome --record --key da76d19b-fb31-4f8b-8b0f-a201a713df45"
+    "cy:recordLocalHeadedChrome": "npm run cy:runLocalHeadedChrome --record --key da76d19b-fb31-4f8b-8b0f-a201a713df45",
+    "deleteReports": "node test/cypress/deleteReports.ts",
+    "mergeReport": "mochawesome-merge test/cypress/report/mochawesome-report/*.json > test/cypress/report/output.json",
+    "generateReport": "marge test/cypress/report/output.json --reportDir ./ --inline"
   },
   "keywords": [],
   "author": "Farkas Viktor",

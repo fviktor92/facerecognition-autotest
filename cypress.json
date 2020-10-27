@@ -22,7 +22,8 @@
   "reporterOptions": {
     "overwrite": false,
     "html": false,
-    "json": true
+    "json": true,
+    "reportDir": "test/cypress/report/mochawesome-report"
   },
   "projectId": "orwre8"
 }
