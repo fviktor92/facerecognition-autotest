@@ -1,5 +1,5 @@
 {
-  "defaultCommandTimeout": 20000,
+  "defaultCommandTimeout": 6000,
   "pageLoadTimeout": 60000,
   "baseUrl": "http://client:3000",
   "ignoreTestFiles": [
@@ -18,5 +18,11 @@
   "screenshotsFolder": "test/cypress/screenshots",
   "videosFolder": "test/cypress/videos",
   "supportFile": "test/cypress/support/index.ts",
-  "reporter": "mochawesome"
+  "reporter": "mochawesome",
+  "reporterOptions": {
+    "overwrite": false,
+    "html": false,
+    "json": true
+  },
+  "projectId": "orwre8"
 }

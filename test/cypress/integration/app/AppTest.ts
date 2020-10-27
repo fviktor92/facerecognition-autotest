@@ -102,7 +102,7 @@ describe('App Test', function (): void
         {
             const beforeEntries: number = parseInt($div.text());
             typeImageUrlAndDetect('https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg');
-            cy.get(AppPage.ENTRIES_TXT).should('have.text', beforeEntries + 1);
+            cy.get(AppPage.ENTRIES_TXT, {timeout: 20000}).should('have.text', beforeEntries + 1);
         })
 
         cy.get(AppPage.BOUNDING_BOX_DIVS, {timeout: 20000});

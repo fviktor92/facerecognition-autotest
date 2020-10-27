@@ -4,6 +4,7 @@ import {compareSync} from "bcrypt-nodejs";
 import {PagePaths} from "../../support/paths/PagePaths";
 import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
+import {clearSessionStorage, deauthenticateUser} from "../../support/appactions/AuthActions";
 
 describe('Registration Test', function (): void
 {
@@ -12,6 +13,7 @@ describe('Registration Test', function (): void
     beforeEach(function (): void
     {
         cy.visit(PagePaths.REGISTER_PAGE);
+        deauthenticateUser();
         cy.get(Pages.REGISTER_PANEL).as('registerPanel').within(() =>
         {
             cy.get('#name').as('nameInput')
@@ -36,10 +38,7 @@ describe('Registration Test', function (): void
           {
               cy.route2AccessControl('POST', `**${ApiPaths.REGISTER_PATH}`, 200, json)
 
-              cy.get('@nameInput').type(this.successfulRegistrationResponse.name)
-                .get('@emailInput').type(this.successfulRegistrationResponse.email)
-                .get('@passwordInput').type('mockpw')
-                .get('@registerButton').click();
+              submitRegistrationForm(this.successfulRegistrationResponse.name, this.successfulRegistrationResponse.email, 'mockpw');
 
               cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
               {
@@ -66,10 +65,7 @@ describe('Registration Test', function (): void
           {
               cy.route2AccessControl('POST', `**${ApiPaths.REGISTER_PATH}`, 200, json)
 
-              cy.get('@nameInput').type('Already User')
-                .get('@emailInput').type('already@exists.me')
-                .get('@passwordInput').type('alreadypw')
-                .get('@registerButton').click();
+              submitRegistrationForm('Already User', 'already@exists.me', 'alreadypw');
 
               cy.get('#register-error-message').should('have.text', this.invalidRegistrationResponse.errorMessage);
           });
@@ -111,33 +107,39 @@ describe('Registration Test', function (): void
               let expectedPw: string = this.E2E_REG_REQUEST.password;
               cy.task('deleteUserByEmail', expectedEmail).then(() =>
               {
-                  cy.get('@nameInput').type(expectedName)
-                    .get('@emailInput').type(expectedEmail)
-                    .get('@passwordInput').type(expectedPw)
-                    .get('@registerButton').click()
-                    .get(Pages.APP_PANEL)
-                    .then(() =>
-                    {
-                        cy.task('queryUserByEmail', this.E2E_REG_REQUEST.email).then((row: any) =>
-                        {
-                            let {id, name, email, entries, joined} = row;
-                            let _joined: string = new Date(joined).toDateString();
-                            let today: string = new Date().toDateString();
-                            expect(id).to.be.a('number', 'id is number type');
-                            expect(name).to.be.equal(expectedName, 'name matches');
-                            expect(email).to.be.equal(expectedEmail, 'email matches');
-                            expect(entries).to.be.equal('0', 'initial entry number is 0');
-                            expect(_joined).to.be.equal(today, 'joined date is today');
-                        });
-                        cy.task('queryLoginByEmail', expectedEmail).then((row: any) =>
-                        {
-                            let {id, hash, email} = row;
-                            expect(id).to.be.a('number', 'id is number type');
-                            expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password matches');
-                            expect(email).to.be.equal(expectedEmail, 'email matches');
-                        })
-                    });
+                  submitRegistrationForm(expectedName, expectedEmail, expectedPw)
+                      .get(Pages.APP_PANEL)
+                      .then(() =>
+                      {
+                          cy.task('queryUserByEmail', this.E2E_REG_REQUEST.email).then((row: any) =>
+                          {
+                              let {id, name, email, entries, joined} = row;
+                              let _joined: string = new Date(joined).toDateString();
+                              let today: string = new Date().toDateString();
+                              expect(id).to.be.a('number', 'id is number type');
+                              expect(name).to.be.equal(expectedName, 'name matches');
+                              expect(email).to.be.equal(expectedEmail, 'email matches');
+                              expect(entries).to.be.equal('0', 'initial entry number is 0');
+                              expect(_joined).to.be.equal(today, 'joined date is today');
+                          });
+                          cy.task('queryLoginByEmail', expectedEmail).then((row: any) =>
+                          {
+                              let {id, hash, email} = row;
+                              expect(id).to.be.a('number', 'id is number type');
+                              expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password matches');
+                              expect(email).to.be.equal(expectedEmail, 'email matches');
+                          })
+                      });
               });
           });
     });
 });
+
+const submitRegistrationForm = (name: string, email: string, password: string): Cypress.Chainable<JQuery<HTMLElement>> =>
+{
+    // TODO: Using force to avoid error reported in: https://github.com/cypress-io/cypress/issues/5827
+    return cy.get('@nameInput').type(name, {force: true})
+             .get('@emailInput').type(email, {force: true})
+             .get('@passwordInput').type(password, {force: true})
+             .get('@registerButton').click({force: true})
+}

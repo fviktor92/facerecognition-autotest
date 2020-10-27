@@ -6,17 +6,25 @@
   "scripts": {
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "cy:openLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 ENV=local cypress open"
+    "cy:runLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 ENV=local npm run cy:run",
+    "cy:runDocker": "cross-env CYPRESS_BASE_URL=http://client:3000 ENV=docker npm run cy:run",
+    "cy:openLocal": "cross-env CYPRESS_BASE_URL=http://127.0.0.1:3000 ENV=local npm run cy:open",
+    "cy:runLocalHeadedChrome": "npm run cy:runLocal --browser chrome --headed",
+    "cy:runDockerHeadedChrome": "npm run cy:runDocker --browser chrome --headed",
+    "cy:runLocalHeadlessChrome": "npm run cy:runLocal --browser chrome --headless",
+    "cy:runDockerHeadlessChrome": "npm run cy:runDocker --browser chrome --headless",
+    "cy:recordLocalHeadlessChrome": "npm run cy:runLocalHeadlessChrome --record --key da76d19b-fb31-4f8b-8b0f-a201a713df45",
+    "cy:recordLocalHeadedChrome": "npm run cy:runLocalHeadedChrome --record --key da76d19b-fb31-4f8b-8b0f-a201a713df45"
   },
   "keywords": [],
   "author": "Farkas Viktor",
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt-nodejs": "0.0.30",
+    "@types/cypress-image-snapshot": "^3.1.1",
     "@types/debug": "^4.1.5",
     "@types/node": "^14.11.2",
     "@types/pg": "^7.14.5",
-    "@types/cypress-image-snapshot": "^3.1.1",
     "bcrypt-nodejs": "0.0.3",
     "cross-env": "^7.0.2",
     "cypress": "^5.5.0",
@@ -24,6 +32,7 @@
     "eslint-plugin-cypress": "^2.11.2",
     "mocha": "^8.1.1",
     "mochawesome": "^6.1.1",
+    "mochawesome-merge": "^4.2.0",
     "pg": "^8.0.3"
   },
   "dependencies": {

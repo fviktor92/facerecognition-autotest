@@ -40,9 +40,7 @@ describe('Sign In Test', function (): void
                     cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 200, this.successfulSignInResponse);
                     cy.route2AccessControl('GET', `**${ApiPaths.PROFILE_PATH}/${this.successfulProfileResponse.id}`, 200, this.successfulProfileResponse);
 
-                    cy.get('@emailInput').type('mockuser@mock.hu')
-                      .get('@passwordInput').type('mockpw')
-                      .get('@signInButton').click();
+                    submitSignInForm('mockuser@mock.hu', 'mockpw');
 
                     cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
                     {
@@ -68,11 +66,9 @@ describe('Sign In Test', function (): void
         cy.fixture(`${FIXTURES_AUTH_PATH}mocked_signInResponse_400.json`).as('invalidSignInResponse')
           .then(() =>
           {
-              cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 400, this.invalidSignInresponse);
+              cy.route2AccessControl('POST', `**${ApiPaths.SIGNIN_PATH}`, 400, this.invalidSignInResponse);
 
-              cy.get('@emailInput').type('not@exists.hu')
-                .get('@passwordInput').type('notauser')
-                .get('@signInButton').click();
+              submitSignInForm('not@exists.hu', 'notauser');
 
               cy.get('#signin-error-message').should('have.text', this.invalidSignInResponse.errorMessage);
           });
@@ -97,6 +93,12 @@ describe('Sign In Test', function (): void
         });
     });
 
+    it('Registration button should redirect to register page', function (): void
+    {
+        cy.get('@registerButton').click()
+          .get(Pages.REGISTER_PANEL).should('be.visible');
+    })
+
     /**
      * Pre-condition: Given user with 'testmctestify@test.hu' e-mail exists in both 'users' and 'login' table.
      * Verifies that the user was successfully logged in and the expected user data is returned.
@@ -111,9 +113,7 @@ describe('Sign In Test', function (): void
               cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInResponseExpected.json`).as('expectedResponse')
                 .then(() =>
                 {
-                    cy.get('@emailInput').type(expectedEmail)
-                      .get('@passwordInput').type(expectedPw)
-                      .get('@signInButton').click();
+                    submitSignInForm(expectedEmail, expectedPw)
 
                     cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
                     {
@@ -123,4 +123,12 @@ describe('Sign In Test', function (): void
                 });
           });
     });
-})
+});
+
+const submitSignInForm = (email: string, password: string): Cypress.Chainable<JQuery<HTMLElement>> =>
+{
+    // TODO: Using force to avoid error reported in: https://github.com/cypress-io/cypress/issues/5827
+    return cy.get('@emailInput').type(email, {force: true})
+             .get('@passwordInput').type(password, {force: true})
+             .get('@signInButton').click({force: true})
+}
