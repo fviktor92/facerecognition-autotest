@@ -4,4 +4,5 @@
 !plugins/*.js
 /test/cypress/videos/
 /test/cypress/screenshots/
+**/__diff_output__/*
 /.idea/*

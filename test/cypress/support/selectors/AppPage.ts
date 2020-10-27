@@ -7,6 +7,7 @@ export const AppPage =
         URL_INPUT: '#url-input',
         DETECT_BTN: '#detect-btn',
         INPUT_IMG: '#inputimage',
-        BOUNDING_BOX_DIVS: '.bounding-box'
+        BOUNDING_BOX_DIVS: '.bounding-box',
+        ERROR_MESSAGE: '#face-recognition-error-message'
     };
 

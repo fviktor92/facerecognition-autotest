@@ -9,13 +9,16 @@ import {Context} from "mocha";
 
 describe('App Test', function (): void
 {
-    const FIXTURES_APP_PATH: string = '/APP/';
+    const FIXTURES_APP_PATH: string = '/app/';
 
     beforeEach(function (): void
     {
         cy.visit(PagePaths.APP_PAGE);
     });
 
+    /**
+     * Verifies that the must have elements for the app are displayed and their content is correct.
+     */
     it('App page should have correct elements displayed', function (): void
     {
         registerAuthenticationResponses(this);
@@ -33,58 +36,89 @@ describe('App Test', function (): void
         cy.url().then((url: string) => expect(Cypress.config().baseUrl + PagePaths.APP_PAGE).to.be.equal(url, 'url matches'));
     });
 
-    it.skip('Face recognition should display multiple boxes', function (): void
-    {
-        registerAuthenticationResponses(this);
-
-        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_multipleFaces_200.json`).then((imageurlResponse: object) =>
-        {
-            this.successfulImageurlResponse = imageurlResponse;
-            cy.fixture(`${FIXTURES_APP_PATH}mocked_imageResponse_200.json`).then((imageResponse: object) =>
-            {
-                this.successfulImageResponse = imageResponse;
-
-                cy.route2('GET', '**/kids.jpg', {
-                      fixture: `${FIXTURES_APP_PATH}kids.jpg`,
-                      headers: {
-                          'content-type': 'image/jpg'
-                      }
-                  })
-                  .route2('POST', `**${ApiPaths.IMAGEURL_PATH}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: this.successfulImageurlResponse
-                  })
-                  .route2('PUT', `**${ApiPaths.IMAGE_PATH}`, {
-                      statusCode: 200,
-                      headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
-                      body: this.successfulImageResponse
-                  });
-
-                cy.get(AppPage.URL_INPUT).type('https://kamubabamama.hu/pics/kids.jpg')
-                  .get(AppPage.DETECT_BTN).click();
-
-                cy.get(AppPage.INPUT_IMG).matchImageSnapshot('multipleFaces');
-            });
-        });
-    });
-
+    /**
+     * Visually verifies that the image is displayed and no boundary face boxes are displayed.
+     * (No face boxes are displayed when the response have no data boundary boxes)
+     */
     it('Face recognition should not display boxes', function (): void
     {
         registerAuthenticationResponses(this);
 
+        cy.route2('GET', '**/retriever.jpg', {
+              fixture: `${FIXTURES_APP_PATH}retriever.jpg`,
+              headers: {
+                  'content-type': 'image/jpg'
+              }
+          })
+          .route2('POST', `**${ApiPaths.IMAGEURL_PATH}`, {
+              statusCode: 200,
+              headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
+              fixture: `${FIXTURES_APP_PATH}mocked_imageurlResponse_noFaces_200.json`
+          }).as('imageurlResponse')
+          .route2('PUT', `**${ApiPaths.IMAGE_PATH}`, {
+              statusCode: 200,
+              headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
+              fixture: `${FIXTURES_APP_PATH}mocked_imageResponse_200.json`
+          });
 
+        cy.get(AppPage.URL_INPUT).type(`${Cypress.config().baseUrl}/retriever.jpg`)
+          .get(AppPage.DETECT_BTN).click();
+
+        cy.wait('@imageurlResponse');
+        cy.get(AppPage.INPUT_IMG).matchImageSnapshot('noFaces');
     });
 
-    it('End to end', function (): void
+    /**
+     * Verifies that an error message is displayed instead of an image when the API return error.
+     */
+    it('Error message should be displayed', {retries: 1}, function (): void
+    {
+        registerAuthenticationResponses(this);
+
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_errorMessage_400.json`).as('errorMessageResponse').then(json =>
+        {
+            this.errorMessageResponse = json;
+            cy.route2('POST', `**${ApiPaths.IMAGEURL_PATH}`, {
+                statusCode: 400,
+                headers: {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'},
+                body: json
+            });
+        });
+
+        cy.get(AppPage.URL_INPUT).type('https://fakepage.com/invalidimg.jpg')
+          .get(AppPage.DETECT_BTN).click();
+
+        cy.get(Pages.APP_PANEL).within(() =>
+        {
+            cy.get(AppPage.ERROR_MESSAGE).should('have.text', this.errorMessageResponse.errorMessage);
+            cy.get(AppPage.INPUT_IMG).should('not.be.visible');
+        });
+    });
+
+    /**
+     * Verifies that when a picture of an URL is submitted:
+     * - Entry count is incremented
+     * - Visually verifies that the image is displayed and 2 boundary face boxes are displayed.
+     */
+    it('End to end', {retries: 1}, function (): void
     {
         cy.fixture('user_default.json').then((userJson: object) =>
         {
             let defaultUser: User = Object.assign(User.prototype, userJson);
             authenticateUser(defaultUser);
-            cy.visit(PagePaths.APP_PAGE);
         });
-    });
+
+        cy.get(AppPage.ENTRIES_TXT).then(($div) =>
+        {
+            const beforeEntries: number = parseInt($div.text());
+            cy.get(AppPage.URL_INPUT).type('https://portal.clarifai.com/cms-assets/20180320221615/face-001.jpg')
+              .get(AppPage.DETECT_BTN).click();
+            cy.get(AppPage.ENTRIES_TXT).should('have.text', beforeEntries + 1);
+        })
+
+        cy.get(AppPage.BOUNDING_BOX_DIVS, {timeout: 20000})
+          .get(AppPage.INPUT_IMG).matchImageSnapshot('e2e_multipleFaces');
+    })
 
     const registerAuthenticationResponses = (testContext: Context) =>
     {
