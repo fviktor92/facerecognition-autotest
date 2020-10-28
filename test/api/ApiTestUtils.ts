@@ -1,19 +1,24 @@
-import {SuperTest} from "supertest";
+import {Response, SuperTest} from "supertest";
 import {EnvironmentManager} from "../../src/common/EnvironmentManager";
 import {SuperAgentRequest} from "superagent";
 import {ApiPaths} from "../cypress/support/paths/ApiPaths";
-import {Response} from "supertest";
 import {User} from "../../src/objects/User";
 
 export const expect = require('chai').expect;
 
-export const getSuperTest = (token?: string): SuperTest<SuperAgentRequest> =>
+export const getSuperTest = (): SuperTest<SuperAgentRequest> =>
 {
-    const superTest = require('supertest')(EnvironmentManager.getApiBaseUrl());
-    return (token) ? superTest.set('Authorization', token) : superTest;
-}
+    return require('supertest')(EnvironmentManager.getApiBaseUrl());
+};
 
-export const authenticateAsUser = async (user: string | User): Promise<string> =>
+/**
+ * @param {string | User} user
+ * @returns {Promise<object>} Authorization header object with a JWT value.
+ * @example
+ *   let authorizationHeader = await authenticateAsUser(username);
+ *   getSuperTest().get(url).set(authorizationHeader);
+ */
+export const authenticateAsUser = async (user: string | User): Promise<object> =>
 {
     return await getSuperTest()
         .post(ApiPaths.SIGNIN_PATH)
@@ -21,6 +26,6 @@ export const authenticateAsUser = async (user: string | User): Promise<string> =
         .then((res: Response) =>
         {
             expect(res.status).to.equal(200);
-            return res.body.token;
+            return {Authorization: res.body.token};
         });
-}
+};
