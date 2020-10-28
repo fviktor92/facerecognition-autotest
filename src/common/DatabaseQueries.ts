@@ -75,7 +75,7 @@ export class DatabaseQueries
      * @param {string} email The expected email of the user.
      * @returns {Promise<Number>}
      */
-    private static async deleteUserByEmail(email: string): Promise<Number>
+    public static async deleteUserByEmail(email: string): Promise<Number>
     {
         let affectedRows: number = 0;
         this.pool.connect((err, client, done) =>
@@ -123,6 +123,8 @@ export class DatabaseQueries
                             {
                                 console.error('Error committing transaction', err.stack);
                             }
+
+                            affectedRows = res.rowCount;
                             done();
                         });
                     });
