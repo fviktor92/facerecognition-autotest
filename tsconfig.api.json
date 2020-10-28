@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "./node_modules",
+    "rootDir": "./"
+  },
+  "module": "commonjs",
+  "target": "es2015",
+  "lib": [
+    "es2017"
+  ],
+  "types": [
+    "pg",
+    "node"
+  ],
+  "typeRoots": [
+    "node_modules/@types"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "test/api/**/*.ts"
+  ]
+}

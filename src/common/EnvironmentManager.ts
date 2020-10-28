@@ -2,9 +2,9 @@ import {ResourceFileReader} from "./ResourceFileReader";
 import {Pool, PoolConfig} from "pg";
 
 const ENVIRONMENT: string = process.env.ENV!;
-const DB_CONFIG_FILENAME: string = 'database_config.json';
+const DB_CONFIG_FILENAME: string = 'config_database.json';
 
-const TEST_ENV_CONFIG_FILENAME: string = 'test_environments.json';
+const TEST_ENV_CONFIG_FILENAME: string = 'config_environments.json';
 const API_HOST_ATTRIBUTE: string = 'apiHost';
 const CLIENT_HOST_ATTRIBUTE: string = 'clientHost';
 
@@ -13,8 +13,8 @@ const CLIENT_HOST_ATTRIBUTE: string = 'clientHost';
  */
 export class EnvironmentManager
 {
-    private static ENV_CONFIG: { [i: string]: object } = ResourceFileReader.readResourceJsonSync(TEST_ENV_CONFIG_FILENAME);
-    private static DB_CONFIG: { [i: string]: object } = ResourceFileReader.readResourceJsonSync(DB_CONFIG_FILENAME);
+    private static ENV_CONFIG: { [i: string]: object } = ResourceFileReader.readConfigJsonSync(TEST_ENV_CONFIG_FILENAME);
+    private static DB_CONFIG: { [i: string]: object } = ResourceFileReader.readConfigJsonSync(DB_CONFIG_FILENAME);
 
     // For Cypress
     static environmentTasks = {

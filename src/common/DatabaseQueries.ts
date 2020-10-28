@@ -31,24 +31,43 @@ export class DatabaseQueries
      * Executes a select query with the given email in the 'users' table.
      * @param {string} email The expected email of the user.
      * @returns {Promise<QueryResultRow>}
+     * @throws Error If the user could not be found
      */
-    private static async getUserByEmail(email: string): Promise<QueryResultRow>
+    public static async getUserByEmail(email: string): Promise<QueryResultRow>
     {
         return this.pool.query('SELECT * FROM public.users WHERE email=$1;', [email])
-                   .then(res => res.rows[0])
-                   .catch(err => console.log(err));
+                   .then(res =>
+                   {
+                       if (res.rowCount === 1)
+                       {
+                           return res.rows[0];
+                       } else
+                       {
+                           throw new Error(`No user found with ${email}`);
+
+                       }
+                   })
     }
 
     /**
      * Executes a select query with the given email in the 'login' table.
      * @param {string} email The expected email of the user.
      * @returns {Promise<QueryResultRow>}
+     * @throws Error If the user could not be found
      */
-    private static async getLoginByEmail(email: string): Promise<QueryResultRow>
+    public static async getLoginByEmail(email: string): Promise<QueryResultRow>
     {
         return this.pool.query('SELECT * FROM public.login WHERE email=$1;', [email])
-                   .then(res => res.rows[0])
-                   .catch(err => console.log(err));
+                   .then(res =>
+                   {
+                       if (res.rowCount === 1)
+                       {
+                           return res.rows[0];
+                       } else
+                       {
+                           throw new Error(`No user found with ${email}`);
+                       }
+                   });
     };
 
     /**
