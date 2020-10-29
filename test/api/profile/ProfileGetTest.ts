@@ -9,6 +9,8 @@ import {DatabaseQueries} from "../../../src/common/DatabaseQueries";
  */
 describe('/profile GET', function ()
 {
+    const RESOURCE_PATH: string = '/api/profile/';
+
     let userA: User;
     let authorizationHeaderUserA: object;
 
@@ -24,17 +26,18 @@ describe('/profile GET', function ()
      */
     it('Existing user profile request should be successful', async function ()
     {
-        await DatabaseQueries.getUserByEmail(userA.email).then(async () =>
+        await DatabaseQueries.getUserByEmail(userA.email).then(async (row) =>
         {
-            const today: string = new Date().toDateString();
+            const expectedResponse = ResourceFileReader.readTestResourceJsonSync(`${RESOURCE_PATH}profileResponse_user_a.json`);
             const response = await getSuperTest().get(`${ApiPaths.PROFILE_PATH}/2`).set(authorizationHeaderUserA);
 
             expect(response.status).to.equal(200);
-            expect(response.body.id).to.be.equal(2, 'id matches')
-            expect(response.body.name).to.be.equal(userA.name, 'name matches');
-            expect(response.body.email).to.be.equal(userA.email, 'email matches');
-            expect(response.body.entries).to.be.equal('0', 'initial entry number is 0');
-            expect(new Date(response.body.joined).toDateString()).to.be.equal(today, 'joined date is today');
+
+            expect(response.body.id).to.be.equal(expectedResponse.id, 'id matches')
+            expect(response.body.name).to.be.equal(expectedResponse.name, 'name matches');
+            expect(response.body.email).to.be.equal(expectedResponse.email, 'email matches');
+            expect(response.body.entries).to.be.equal(expectedResponse.entries, 'initial entry number is 0');
+            expect(new Date(response.body.joined).toDateString()).to.be.equal(new Date(expectedResponse.joined).toDateString(), 'joined date matches');
         });
     });
 

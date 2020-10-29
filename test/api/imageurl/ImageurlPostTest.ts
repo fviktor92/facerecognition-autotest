@@ -82,4 +82,18 @@ describe('/imageurl POST', function ()
         expect(response.status).to.equal(401);
         expect(response.body.errorMessage).to.equal('Unauthorized');
     });
+
+    /**
+     * Verifies that an error message is thrown if the required attributes are missing.
+     */
+    it('Missing required attributes should throw error', async function ()
+    {
+        const response = await getSuperTest()
+            .post(ApiPaths.IMAGEURL_PATH)
+            .set(authorizationHeaderUserA)
+            .send('{}');
+
+        expect(response.status).to.equal(400);
+        expect(response.body.errorMessage).to.equal('Incorrect data.');
+    });
 });
