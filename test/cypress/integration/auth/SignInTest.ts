@@ -3,7 +3,7 @@ import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
 import {AppPage} from "../../support/selectors/AppPage";
 import {NavigationBar} from "../../support/selectors/NavigationBar";
-import {clearSessionStorage} from "../../support/appactions/AuthActions";
+import {clearSessionStorage, TOKEN_ATTRIBUTE} from "../../support/appactions/AuthActions";
 
 describe('Sign In Test', function (): void
 {
@@ -110,15 +110,22 @@ describe('Sign In Test', function (): void
           {
               let expectedEmail = this.E2E_SIGNIN_REQ.email;
               let expectedPw = this.E2E_SIGNIN_REQ.password;
-              cy.fixture(`${FIXTURES_AUTH_PATH}e2e_signInResponseExpected.json`).as('expectedResponse')
+              cy.route2('POST', `**${PagePaths.SIGNIN_PAGE}`).as('signInResponse');
+              cy.fixture(`${FIXTURES_AUTH_PATH}e2e_profileResponseExpected.json`).as('expectedProfileResponse')
                 .then(() =>
                 {
                     submitSignInForm(expectedEmail, expectedPw)
-
-                    cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+                    cy.wait('@signInResponse').then((response) =>
                     {
-                        cy.get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.expectedResponse.name}, your current entry count is...`)
-                          .get(AppPage.ENTRIES_TXT).should('have.text', `${this.expectedResponse.entries}`);
+                        let responseBody: JSON = JSON.parse((response.response.body as string));
+                        let signInToken: string = (responseBody as Cypress.ObjectLike)[TOKEN_ATTRIBUTE];
+
+                        cy.get(Pages.APP_PANEL).should('be.visible').within(() =>
+                        {
+                            cy.get(AppPage.CURRENT_COUNT_TXT).should('have.text', `${this.expectedProfileResponse.name}, your current entry count is...`)
+                              .get(AppPage.ENTRIES_TXT).should('have.text', `${this.expectedProfileResponse.entries}`);
+                        });
+                        expect(sessionStorage.getItem(TOKEN_ATTRIBUTE)).to.equal(signInToken, "JWT should be added to session storage.");
                     });
                 });
           });

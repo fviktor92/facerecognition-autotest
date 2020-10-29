@@ -4,7 +4,7 @@ import {compareSync} from "bcrypt-nodejs";
 import {PagePaths} from "../../support/paths/PagePaths";
 import {ApiPaths} from "../../support/paths/ApiPaths";
 import {Pages} from "../../support/selectors/Pages";
-import {clearSessionStorage, deauthenticateUser} from "../../support/appactions/AuthActions";
+import {clearSessionStorage, deauthenticateUser, TOKEN_ATTRIBUTE} from "../../support/appactions/AuthActions";
 
 describe('Registration Test', function (): void
 {
@@ -129,6 +129,7 @@ describe('Registration Test', function (): void
                               expect(compareSync(expectedPw, hash)).to.be.equal(true, 'password matches');
                               expect(email).to.be.equal(expectedEmail, 'email matches');
                           })
+                          expect(sessionStorage.getItem(TOKEN_ATTRIBUTE)).to.have.lengthOf.above(1, "JWT should be added to session storage.");
                       });
               });
           });
