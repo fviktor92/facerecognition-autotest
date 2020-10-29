@@ -10,7 +10,7 @@ import {compareSync} from "bcrypt-nodejs";
  */
 describe('/register POST', function ()
 {
-    const resourcePath = '/api/register/';
+    const RESOURCE_PATH: string = '/api/register/';
     /**
      * Pre-condition: User does not exists with the given e-mail.
      * Verifies that the user was successfully created by querying the database:
@@ -19,7 +19,8 @@ describe('/register POST', function ()
      */
     it('New user should be able to register', async function ()
     {
-        const expectedUser: User = Object.assign(User.prototype, ResourceFileReader.readTestResourceJsonSync(`${resourcePath}registrationRequest_user_restToEnd.json`));
+        const expectedUser: User = Object.assign(User.prototype,
+            ResourceFileReader.readTestResourceJsonSync(`${RESOURCE_PATH}registrationRequest_user_restToEnd.json`));
         const today: string = new Date().toDateString();
 
         await DatabaseQueries.deleteUserByEmail(expectedUser.email).then(async () =>
@@ -65,7 +66,8 @@ describe('/register POST', function ()
      */
     it('User should receive error for already registered email', async function ()
     {
-        let existingUser: User = Object.assign(User.prototype, ResourceFileReader.readTestResourceJsonSync('user_a.json'));
+        let existingUser: User = Object.assign(User.prototype,
+            ResourceFileReader.readTestResourceJsonSync('user_a.json'));
         await DatabaseQueries.getUserByEmail(existingUser.email).then(async () =>
         {
             const response = await getSuperTest()

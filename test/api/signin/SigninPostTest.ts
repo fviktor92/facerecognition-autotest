@@ -9,7 +9,7 @@ import {User} from "../../../src/objects/User";
  */
 describe('/signin POST', function ()
 {
-    const resourcePath = '/api/signin/';
+    const RESOURCE_PATH: string = '/api/signin/';
 
     /**
      * Pre-condition: Existing user with e-mail 'a@a.hu' in database.
@@ -21,7 +21,7 @@ describe('/signin POST', function ()
         {
             const response = await getSuperTest()
                 .post(ApiPaths.SIGNIN_PATH)
-                .send(ResourceFileReader.readTestResourceJsonSync(`${resourcePath}signinRequest_user_a.json`));
+                .send(ResourceFileReader.readTestResourceJsonSync(`${RESOURCE_PATH}signinRequest_user_a.json`));
 
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.equal(2);
@@ -37,7 +37,7 @@ describe('/signin POST', function ()
     {
         const response = await getSuperTest()
             .post(ApiPaths.SIGNIN_PATH)
-            .send(ResourceFileReader.readTestResourceJsonSync(`${resourcePath}signinRequest_user_nonExisting.json`));
+            .send(ResourceFileReader.readTestResourceJsonSync(`${RESOURCE_PATH}signinRequest_user_nonExisting.json`));
 
         expect(response.status).to.equal(400);
         expect(response.body.errorMessage).to.equal('Unable to sign in with this e-mail and password combination.');
@@ -66,7 +66,7 @@ describe('/signin POST', function ()
         {
             const response = await getSuperTest()
                 .post(ApiPaths.SIGNIN_PATH)
-                .send(ResourceFileReader.readTestResourceJsonSync(`${resourcePath}signinRequest_user_a_wrongCredentials.json`));
+                .send(ResourceFileReader.readTestResourceJsonSync(`${RESOURCE_PATH}signinRequest_user_a_wrongCredentials.json`));
 
             expect(response.status).to.equal(400)
             expect(response.body.errorMessage).to.equal('Unable to sign in with this e-mail and password combination.');
