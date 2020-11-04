@@ -30,7 +30,6 @@ describe('/register POST', function ()
                 .send(expectedUser)
                 .then((response) =>
                 {
-
                     expect(response.status).to.equal(200);
                     expect(response.body.id).to.be.a('number', 'id is number type');
                     expect(response.body.name).to.be.equal(expectedUser.name, 'name matches');
@@ -38,7 +37,6 @@ describe('/register POST', function ()
                     expect(response.body.entries).to.be.equal('0', 'initial entry number is 0');
                     expect(new Date(response.body.joined).toDateString()).to.be.equal(today, 'joined date is today');
                 });
-
 
             await DatabaseQueries.getUserByEmail(expectedUser.email).then(async (row) =>
             {

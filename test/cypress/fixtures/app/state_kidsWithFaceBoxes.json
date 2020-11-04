@@ -1,0 +1,18 @@
+{
+  "imageUrl": "http://localhost:3000/kids.jpg",
+  "input": "http://localhost:3000/kids.jpg",
+  "boxes": [
+    {
+      "bottomRow": 235.33642412,
+      "leftCol": 296.65512,
+      "rightCol": 170.63265,
+      "topRow": 48.04059315999999
+    },
+    {
+      "bottomRow": 241.20319160000003,
+      "leftCol": 184.97621999999998,
+      "rightCol": 281.871915,
+      "topRow": 41.699888019999996
+    }
+  ]
+}

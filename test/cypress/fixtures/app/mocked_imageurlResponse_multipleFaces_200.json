@@ -2,16 +2,16 @@
   "status": {
     "code": 10000,
     "description": "Ok",
-    "req_id": "6fdc1d4817f846dd9041b9f2341c2038"
+    "req_id": "3665a9e7d3c74b1f9cd00f55a5e23b40"
   },
   "outputs": [
     {
-      "id": "8f96e0a43aa6497eb0ec759117cc24ac",
+      "id": "8838b8ecd0e94aff996f80651598938a",
       "status": {
         "code": 10000,
         "description": "Ok"
       },
-      "created_at": "2020-10-26T09:28:32.349209056Z",
+      "created_at": "2020-11-04T18:13:57.600445255Z",
       "model": {
         "id": "a403429f2ddf4b49b307e318f00e528b",
         "name": "face",
@@ -42,23 +42,23 @@
         "model_type_id": "visual-detector"
       },
       "input": {
-        "id": "4c3060a29ced4e6d9f22faa2f76ac149",
+        "id": "5bb7ae023f204fe997b5428684677f55",
         "data": {
           "image": {
-            "url": "https://clarifai.com/cms-assets/20180320221615/face-001.jpg"
+            "url": "https://clarifai.com/cms-assets/20180320221617/face-004.jpg"
           }
         }
       },
       "data": {
         "regions": [
           {
-            "id": "pv1u7d8donqv",
+            "id": "iekb29a3xscn",
             "region_info": {
               "bounding_box": {
-                "top_row": 0.14602004,
-                "left_col": 0.59331024,
-                "bottom_row": 0.28469172,
-                "right_col": 0.6587347
+                "top_row": 0.25336015,
+                "left_col": 0.7548263,
+                "bottom_row": 0.7215567,
+                "right_col": 0.9827392
               }
             },
             "data": {
@@ -66,21 +66,21 @@
                 {
                   "id": "ai_8jtPl3Xj",
                   "name": "face",
-                  "value": 0.9998888,
+                  "value": 0.99983656,
                   "app_id": "main"
                 }
               ]
             },
-            "value": 0.9998888
+            "value": 0.99983656
           },
           {
-            "id": "dqiant9fzfop",
+            "id": "tj9s53gsh7ox",
             "region_info": {
               "bounding_box": {
-                "top_row": 0.12674738,
-                "left_col": 0.36995244,
-                "bottom_row": 0.2668596,
-                "right_col": 0.43625617
+                "top_row": 0.06884859,
+                "left_col": 0.5504088,
+                "bottom_row": 0.4609804,
+                "right_col": 0.75762063
               }
             },
             "data": {
@@ -88,117 +88,15 @@
                 {
                   "id": "ai_8jtPl3Xj",
                   "name": "face",
-                  "value": 0.999777,
+                  "value": 0.99975806,
                   "app_id": "main"
                 }
               ]
             },
-            "value": 0.999777
+            "value": 0.99975806
           }
         ]
       }
     }
-  ],
-  "rawData": {
-    "status": {
-      "code": 10000,
-      "description": "Ok",
-      "req_id": "6fdc1d4817f846dd9041b9f2341c2038"
-    },
-    "outputs": [
-      {
-        "id": "8f96e0a43aa6497eb0ec759117cc24ac",
-        "status": {
-          "code": 10000,
-          "description": "Ok"
-        },
-        "created_at": "2020-10-26T09:28:32.349209056Z",
-        "model": {
-          "id": "a403429f2ddf4b49b307e318f00e528b",
-          "name": "face",
-          "created_at": "2016-10-25T19:30:38.541073Z",
-          "app_id": "main",
-          "output_info": {
-            "output_config": {
-              "concepts_mutually_exclusive": false,
-              "closed_environment": false,
-              "max_concepts": 0,
-              "min_value": 0
-            },
-            "message": "Show output_info with: GET /models/{model_id}/output_info",
-            "type": "detect-concept",
-            "type_ext": "detect-concept"
-          },
-          "model_version": {
-            "id": "34ce21a40cc24b6b96ffee54aabff139",
-            "created_at": "2019-01-17T19:45:49.087547Z",
-            "status": {
-              "code": 21100,
-              "description": "Model is trained and ready"
-            }
-          },
-          "display_name": "Face Detection",
-          "input_info": {},
-          "train_info": {},
-          "model_type_id": "visual-detector"
-        },
-        "input": {
-          "id": "4c3060a29ced4e6d9f22faa2f76ac149",
-          "data": {
-            "image": {
-              "url": "https://clarifai.com/cms-assets/20180320221615/face-001.jpg"
-            }
-          }
-        },
-        "data": {
-          "regions": [
-            {
-              "id": "pv1u7d8donqv",
-              "region_info": {
-                "bounding_box": {
-                  "top_row": 0.14602004,
-                  "left_col": 0.59331024,
-                  "bottom_row": 0.28469172,
-                  "right_col": 0.6587347
-                }
-              },
-              "data": {
-                "concepts": [
-                  {
-                    "id": "ai_8jtPl3Xj",
-                    "name": "face",
-                    "value": 0.9998888,
-                    "app_id": "main"
-                  }
-                ]
-              },
-              "value": 0.9998888
-            },
-            {
-              "id": "dqiant9fzfop",
-              "region_info": {
-                "bounding_box": {
-                  "top_row": 0.12674738,
-                  "left_col": 0.36995244,
-                  "bottom_row": 0.2668596,
-                  "right_col": 0.43625617
-                }
-              },
-              "data": {
-                "concepts": [
-                  {
-                    "id": "ai_8jtPl3Xj",
-                    "name": "face",
-                    "value": 0.999777,
-                    "app_id": "main"
-                  }
-                ]
-              },
-              "value": 0.999777
-            }
-          ]
-        }
-      }
-    ]
-  }
+  ]
 }

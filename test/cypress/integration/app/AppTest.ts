@@ -7,6 +7,8 @@ import {Pages} from "../../support/selectors/Pages";
 import {AppPage} from "../../support/selectors/AppPage";
 import {NavigationBar} from "../../support/selectors/NavigationBar";
 import {Context} from "mocha";
+import {setAppState} from "../../support/appactions/FaceRecognitionActions";
+import {ResourceFileReader} from "../../../../src/common/ResourceFileReader";
 
 describe('App Test', function (): void
 {
@@ -86,7 +88,33 @@ describe('App Test', function (): void
      */
     it('New image input url should replace existing image', function (): void
     {
+        stubAuthenticationResponses(this);
 
+        cy.route2('GET', '**/kids.jpg', {
+            fixture: `${FIXTURES_APP_PATH}kids.jpg`,
+            headers: {
+                'content-type': 'image/jpg'
+            }
+        }).fixture(`${FIXTURES_APP_PATH}state_kidsWithFaceBoxes.json`).then(state =>
+        {
+            setAppState(state);
+        });
+
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageurlResponse_multipleFaces_200.json`)
+          .then(json => cy.route2AccessControl('POST', `**${ApiPaths.IMAGEURL_PATH}`, 200, json).as('imageurlResponse'));
+        cy.fixture(`${FIXTURES_APP_PATH}mocked_imageResponse_200.json`)
+          .then(json => cy.route2AccessControl('PUT', `**${ApiPaths.IMAGE_PATH}`, 200, json));
+        cy.route2('GET', '**/couple.jpg', {
+            fixture: `${FIXTURES_APP_PATH}couple.jpg`,
+            headers: {
+                'content-type': 'image/jpg'
+            }
+        });
+
+        typeImageUrlAndDetect(`${Cypress.config().baseUrl}/couple.jpg`);
+
+        cy.wait('@imageurlResponse');
+        cy.get(AppPage.INPUT_IMG).matchImageSnapshot('faceRecognitionAgain');
     });
 
     /**
